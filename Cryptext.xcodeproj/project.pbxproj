@@ -14,6 +14,8 @@
 		7993E5091C3C8782000C3E7C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7993E5081C3C8782000C3E7C /* Assets.xcassets */; };
 		7993E50C1C3C8782000C3E7C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7993E50A1C3C8782000C3E7C /* LaunchScreen.storyboard */; };
 		7993E5171C3C8782000C3E7C /* CryptextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7993E5161C3C8782000C3E7C /* CryptextTests.swift */; };
+		7993E5231C3C8B9B000C3E7C /* RNCryptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7993E5221C3C8B9B000C3E7C /* RNCryptor.swift */; };
+		7993E5261C3C8E50000C3E7C /* RNCryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7993E5251C3C8E50000C3E7C /* RNCryptorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +40,9 @@
 		7993E5121C3C8782000C3E7C /* CryptextTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CryptextTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7993E5161C3C8782000C3E7C /* CryptextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptextTests.swift; sourceTree = "<group>"; };
 		7993E5181C3C8782000C3E7C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7993E5221C3C8B9B000C3E7C /* RNCryptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNCryptor.swift; sourceTree = "<group>"; };
+		7993E5241C3C8CE4000C3E7C /* RNCryptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNCryptor.h; sourceTree = "<group>"; };
+		7993E5251C3C8E50000C3E7C /* RNCryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNCryptorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +66,7 @@
 		7993E4F31C3C8782000C3E7C = {
 			isa = PBXGroup;
 			children = (
+				7993E5211C3C8B84000C3E7C /* RNCryptor */,
 				7993E4FE1C3C8782000C3E7C /* Cryptext */,
 				7993E5151C3C8782000C3E7C /* CryptextTests */,
 				7993E4FD1C3C8782000C3E7C /* Products */,
@@ -95,8 +101,18 @@
 			children = (
 				7993E5161C3C8782000C3E7C /* CryptextTests.swift */,
 				7993E5181C3C8782000C3E7C /* Info.plist */,
+				7993E5251C3C8E50000C3E7C /* RNCryptorTests.swift */,
 			);
 			path = CryptextTests;
+			sourceTree = "<group>";
+		};
+		7993E5211C3C8B84000C3E7C /* RNCryptor */ = {
+			isa = PBXGroup;
+			children = (
+				7993E5221C3C8B9B000C3E7C /* RNCryptor.swift */,
+				7993E5241C3C8CE4000C3E7C /* RNCryptor.h */,
+			);
+			name = RNCryptor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -201,6 +217,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7993E5041C3C8782000C3E7C /* SecondViewController.swift in Sources */,
+				7993E5231C3C8B9B000C3E7C /* RNCryptor.swift in Sources */,
 				7993E5001C3C8782000C3E7C /* AppDelegate.swift in Sources */,
 				7993E5021C3C8782000C3E7C /* FirstViewController.swift in Sources */,
 			);
@@ -211,6 +228,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7993E5171C3C8782000C3E7C /* CryptextTests.swift in Sources */,
+				7993E5261C3C8E50000C3E7C /* RNCryptorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -333,6 +351,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pellago.Cryptext;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = RNCryptor.h;
 			};
 			name = Debug;
 		};
@@ -344,6 +363,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pellago.Cryptext;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = RNCryptor.h;
 			};
 			name = Release;
 		};
