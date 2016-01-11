@@ -84,26 +84,6 @@ func getCurrentUser(userRef: CKReference, var appUser: AppUser) {
 }
 
 
-// Post secure message
-// toUsername | fromUsername | message | date
-func postSecureMessage(message: SecureMessage) {
-    let record = CKRecord(recordType: "SecureMessage")
-    record["to"] = message.to
-    record["from"] = message.from
-    record["message"] = message.message
-    record["date"] = message.date
-    let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-    publicDB.saveRecord(record) { savedRecord, error in
-        if error == nil {
-            print("Message saved")
-        }
-        else {
-            print("Error creating message")
-        }
-    }
-}
-
-
 // Store shared credential for encrypting message
 // toUsername | fromUsername | credential
 func postCredential(credential: SharedCredential) {
@@ -119,26 +99,6 @@ func postCredential(credential: SharedCredential) {
         }
         else {
             print("Error creating message")
-        }
-    }
-}
-
-
-// Fetch all app users (POST message table view)
-func getAppUsers(var appUsers: [AppUser]) {
-    let predicate = NSPredicate(format: "TRUEPREDICATE")
-    let query = CKQuery(recordType: "AppUser", predicate: predicate)
-    let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-    publicDB.performQuery(query, inZoneWithID: nil) {results, error in
-        if error == nil {
-            // process
-            for record in results! {
-                let appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
-                appUsers.append(appUser)
-            }
-        }
-        else {
-            print("Error performing query")
         }
     }
 }
@@ -186,57 +146,6 @@ func getCredential(var credential: SharedCredential, to: String, from: String, d
 // Return current user icloud account status
 func isSignedIn() -> Bool {
     return NSFileManager.defaultManager().ubiquityIdentityToken != nil ? true : false
-}
-
-
-func getAppUser(var appUser: AppUser?) {
-    // Fetch iCloud user record ID
-    CKContainer.defaultContainer().fetchUserRecordIDWithCompletionHandler(){ recordID, error in
-        if error == nil {
-            // Now check if username already created for this account!
-            let userID = recordID!
-            let predicate = NSPredicate(format: "userRef == %@", CKReference(recordID: userID, action: CKReferenceAction.None))
-            let query = CKQuery(recordType: "AppUser", predicate: predicate)
-            let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-            publicDB.performQuery(query, inZoneWithID: nil) {results, error in
-                if error == nil {
-                    if results!.isEmpty {
-                        // No username exists for this account, create one
-                        print("No username, create one!")
-                        let record = CKRecord(recordType: "AppUser")
-                        record["userRef"] = CKReference(recordID: userID, action: .None)
-                        record["username"] = "Test User 1"
-                        let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-                        publicDB.saveRecord(record) { savedRecord, error in
-                            if error == nil {
-                                print("User saved")
-                            }
-                            else {
-                                print("Error creating app user")
-                            }
-                        }
-                    }
-                    else {
-                        // process
-                        for record in results! {
-                            appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
-                        }
-                    }
-                }
-                else {
-                    print("Error performing query")
-                    print(error)
-                }
-            }
-        }
-        else {
-            print("Error retrieving iCloud user ID")
-        }
-    }
-    
-    // Check if icloud user has an app username
-    
-    // No app username, display popup to create one
 }
 
 
