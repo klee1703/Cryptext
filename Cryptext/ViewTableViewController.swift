@@ -220,8 +220,8 @@ class ViewTableViewController: UITableViewController {
                 print("User saved")
                 self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
             
-                let title: String = (self.appUser?.username)!
-                self.messagesLabel.title = "\(title): Messages"
+//                let title: String = (self.appUser?.username)!
+//                self.messagesLabel.title = "\(title): Messages"
             
                 // Now load messages
                 self.getMessages()
