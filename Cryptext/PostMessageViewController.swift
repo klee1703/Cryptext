@@ -78,9 +78,7 @@ class PostMessageViewController: UIViewController {
         publicDB.saveRecord(record) { savedRecord, error in
             if error == nil {
                 // Display status
-                let alert = UIAlertController(title: "Cryptext", message: "Message saved", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title:"Okay", style:.Cancel, handler:nil));
-                self.presentViewController(alert, animated:true, completion:nil)
+                print("Messsage saved")
             }
             else {
                 print("Error creating message")
