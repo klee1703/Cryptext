@@ -32,14 +32,13 @@ class PostMessageViewController: UIViewController {
             // Encrypt
             let date = NSDate()
             let sharedSecret = getSharedSecret(toUsername!, from: appUser!.username, date: date)
-            let credential = SharedCredential(to: toUsername!, from: appUser!.username, credential: sharedSecret, date: date)
-            let encryptedMessage = encryptMessage(message.text, credential: credential)
+            let encryptedMessage = encryptMessage(message.text, credential: sharedSecret)
             
             // Post to cloud
             postSecureMessage(SecureMessage(to: toUsername!, from: appUser!.username, message: encryptedMessage, date: date))
 
             // Return to parent view in navigation
-            self.navigationController?.popViewControllerAnimated(true)
+//            self.navigationController?.popViewControllerAnimated(true)
         }
      }
     
@@ -76,13 +75,29 @@ class PostMessageViewController: UIViewController {
         record["date"] = message.date
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
         publicDB.saveRecord(record) { savedRecord, error in
+            var alertMessage = "Error creating message"
             if error == nil {
                 // Display status
-                print("Messsage saved")
+                alertMessage = "Message posted to \(message.to)"
             }
             else {
-                print("Error creating message")
+                if let description = error?.description {
+                    alertMessage = description
+                }
             }
+            
+            let alert = UIAlertController(title: "Message Post", message: alertMessage, preferredStyle: .Alert)
+            alert.addAction(UIAlertAction(title: "Okay", style: .Cancel, handler: { (alertAction) -> Void in
+                // Pop current view of stack
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.navigationController?.popViewControllerAnimated(false)
+                })
+            }))
+
+            // Now present alert
+            dispatch_async(dispatch_get_main_queue(), {
+                self.presentViewController(alert, animated: true, completion: nil)
+            })
         }
     }
 }

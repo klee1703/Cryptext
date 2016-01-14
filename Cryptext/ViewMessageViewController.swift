@@ -32,12 +32,11 @@ class ViewMessageViewController: UIViewController {
         
         // Get credential
         let sharedSecret = getSharedSecret((secureMessage?.to)!, from: (secureMessage?.from)!, date: (secureMessage?.date)!)
-        let credential = SharedCredential(to: (secureMessage?.to)!, from: (secureMessage?.from)!, credential: sharedSecret, date: (secureMessage?.date)!)
         
         // Decrypt
         do {
             
-            let data = try decryptMessage((secureMessage?.message)!, credential: credential)
+            let data = try decryptMessage((secureMessage?.message)!, credential: sharedSecret)
             let text = String(data: data, encoding: NSUTF8StringEncoding)
             
             // Display
@@ -55,48 +54,50 @@ class ViewMessageViewController: UIViewController {
 
     func deleteRecord(message: SecureMessage) {
         // Retrieve record in database
-        let predicate = NSPredicate(format: "to == %@ AND from == %@ AND date == %@", (secureMessage?.to)!, (secureMessage?.from)!, (secureMessage?.date)!)
+        let predicate = NSPredicate(format: "to == %@ AND from == %@ AND date == %@", (message.to), message.from, message.date)
         let query = CKQuery(recordType: "SecureMessage", predicate: predicate)
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
         publicDB.performQuery(query, inZoneWithID: nil) {results, error in
+            var alertMessage = "Error deleting message"
             if error == nil {
                 if !results!.isEmpty {
                     // process
                     for record in results! {
                         publicDB.deleteRecordWithID(record.recordID, completionHandler: { (recordID, error) -> Void in
-                            if (nil == error) {
-                                print("Message deleted")
-                                
-                                // Return to parent view in navigation
-                                dispatch_async(dispatch_get_main_queue(), {
-                                    self.navigationController?.popViewControllerAnimated(true)
-                                })
+                            if (error == nil) {
+                                alertMessage = "Message from \(message.from) deleted"
                             }
                             else {
-                                print("Error deleting message")
-                                print(error)
-                                
-                                // Return to parent view in navigation
-                                dispatch_async(dispatch_get_main_queue(), {
-                                    self.navigationController?.popViewControllerAnimated(true)
-                                })
+                                if let description = error?.description {
+                                    alertMessage = description
+                                }
                             }
                         })
                     }
                 }
                 else {
-                    print("No message found for this ID")
+                    alertMessage = "Message not found"
                 }
             }
             else {
-                print("Message not found for query")
-                print(error)
-                
-                // Return to parent view in navigation
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.navigationController?.popViewControllerAnimated(true)
-                })
+                if let description = error?.description {
+                    alertMessage = description
+                }
             }
+            
+            
+            let alert = UIAlertController(title: "Message Delete", message: alertMessage, preferredStyle: .Alert)
+            alert.addAction(UIAlertAction(title: "Okay", style: .Cancel, handler: { (alertAction) -> Void in
+                // Pop current view of stack
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.navigationController?.popViewControllerAnimated(false)
+                })
+            }))
+            
+            // Now present alert
+            dispatch_async(dispatch_get_main_queue(), {
+                self.presentViewController(alert, animated: true, completion: nil)
+            })
         }
         
     }

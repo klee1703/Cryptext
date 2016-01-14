@@ -21,13 +21,6 @@ struct SecureMessage {
     var date: NSDate
 }
 
-struct SharedCredential {
-    var to: String
-    var from: String
-    var credential: String
-    var date: NSDate
-}
-
 
 func setUserID(var userID: CKRecordID) {
     CKContainer.defaultContainer().fetchUserRecordIDWithCompletionHandler(){ recordID, error in
@@ -41,34 +34,14 @@ func setUserID(var userID: CKRecordID) {
 }
 
 
-func encryptMessage(message: String, credential: SharedCredential) -> NSData {
+func encryptMessage(message: String, credential: String) -> NSData {
     let data: NSData = message.dataUsingEncoding(NSUTF8StringEncoding)!
-    return RNCryptor.encryptData(data, password: credential.credential)
+    return RNCryptor.encryptData(data, password: credential)
 }
 
 
-func decryptMessage(message: NSData, credential: SharedCredential) throws -> NSData {
-    return try RNCryptor.decryptData(message, password: credential.credential)
-}
-
-
-// Store shared credential for encrypting message
-// toUsername | fromUsername | credential
-func postCredential(credential: SharedCredential) {
-    let record = CKRecord(recordType: "Credential")
-    record["to"] = credential.to
-    record["from"] = credential.from
-    record["credential"] = credential.credential
-    record["date"] = credential.date
-    let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-    publicDB.saveRecord(record) { savedRecord, error in
-        if error == nil {
-            print("Credential saved")
-        }
-        else {
-            print("Error creating message")
-        }
-    }
+func decryptMessage(message: NSData, credential: String) throws -> NSData {
+    return try RNCryptor.decryptData(message, password: credential)
 }
 
 
