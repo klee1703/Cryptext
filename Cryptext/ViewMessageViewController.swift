@@ -15,11 +15,15 @@ class ViewMessageViewController: UIViewController {
     @IBOutlet weak var message: UITextView!
     
     @IBAction func deleteMessage(sender: UIButton) {
-        // Retrieve message
-        print("Deleting message")
-        
         // Delete from cloud
-        deleteRecord(secureMessage!)
+        let alert = UIAlertController(title: "Confirm Delete", message: "Delete message from \((secureMessage?.from)!)?", preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: { (alertAction) -> Void in
+            // Delete method
+            self.deleteRecord(self.secureMessage!)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (alertAction) -> Void in
+        }))
+        presentSimpleAlert(alert, animated: true)
     }
     
     override func viewDidLoad() {
@@ -43,7 +47,8 @@ class ViewMessageViewController: UIViewController {
             message.text = text
         }
         catch {
-          print("Error decrypting message")
+            let alert = UIAlertController(title: "Message Decrypt", message: "Error decrypting message", preferredStyle: .Alert)
+            self.presentSimpleAlert(alert, animated: true)
         }
     }
 
@@ -58,35 +63,8 @@ class ViewMessageViewController: UIViewController {
         let query = CKQuery(recordType: "SecureMessage", predicate: predicate)
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
         publicDB.performQuery(query, inZoneWithID: nil) {results, error in
-            var alertMessage = "Error deleting message"
-            if error == nil {
-                if !results!.isEmpty {
-                    // process
-                    for record in results! {
-                        publicDB.deleteRecordWithID(record.recordID, completionHandler: { (recordID, error) -> Void in
-                            if (error == nil) {
-                                alertMessage = "Message from \(message.from) deleted"
-                            }
-                            else {
-                                if let description = error?.description {
-                                    alertMessage = description
-                                }
-                            }
-                        })
-                    }
-                }
-                else {
-                    alertMessage = "Message not found"
-                }
-            }
-            else {
-                if let description = error?.description {
-                    alertMessage = description
-                }
-            }
-            
-            
-            let alert = UIAlertController(title: "Message Delete", message: alertMessage, preferredStyle: .Alert)
+            // Create alert
+            let alert = UIAlertController(title: "Message Delete", message: "Error deleting message", preferredStyle: .Alert)
             alert.addAction(UIAlertAction(title: "Okay", style: .Cancel, handler: { (alertAction) -> Void in
                 // Pop current view of stack
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -94,10 +72,35 @@ class ViewMessageViewController: UIViewController {
                 })
             }))
             
-            // Now present alert
-            dispatch_async(dispatch_get_main_queue(), {
-                self.presentViewController(alert, animated: true, completion: nil)
-            })
+            // Process results of query
+            if error == nil {
+                if !results!.isEmpty {
+                    for record in results! {
+                        publicDB.deleteRecordWithID(record.recordID, completionHandler: { (recordID, error) -> Void in
+                            // Process results of delete
+                            if error == nil {
+                                alert.message = "Message from \(message.from) deleted"
+                            }
+                            else {
+                                if let description = error?.description {
+                                    alert.message = description
+                                }
+                            }
+                            self.presentSimpleAlert(alert, animated: true)
+                        })
+                    }
+                }
+                else {
+                    alert.message = "Message not found"
+                    self.presentSimpleAlert(alert, animated: true)
+                }
+            }
+            else {
+                if let description = error?.description {
+                    alert.message = description
+                }
+                self.presentSimpleAlert(alert, animated: true)
+            }
         }
         
     }
@@ -111,5 +114,12 @@ class ViewMessageViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+
+    
+    func presentSimpleAlert(alert: UIAlertController, animated: Bool) {
+        dispatch_async(dispatch_get_main_queue(), {
+            self.presentViewController(alert, animated: true, completion: nil)
+        })
+    }
 
 }

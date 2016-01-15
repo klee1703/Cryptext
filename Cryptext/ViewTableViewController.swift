@@ -15,6 +15,7 @@ class ViewTableViewController: UITableViewController {
     var appUser: AppUser?
     var messages: [SecureMessage] = []
     var secureMessage: SecureMessage?
+    var labelTitle: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +29,9 @@ class ViewTableViewController: UITableViewController {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        if let title = labelTitle {
+             self.messagesLabel.title = title
+        }
         
         if isSignedIn() == false {
             // Popup icloud login screen
@@ -149,7 +153,6 @@ class ViewTableViewController: UITableViewController {
                             let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
                                 let usernameText = alert.textFields![0] as UITextField
                                 self.setUsername(usernameText.text!, userID: userID)
-                                
                                 })
                             alert.addAction(usernameAction);
                             alert.addTextFieldWithConfigurationHandler { (textField) in
@@ -165,8 +168,12 @@ class ViewTableViewController: UITableViewController {
                                 self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
                             }
                         
-//                            let title: String = (self.appUser?.username)!
-//                            self.messagesLabel.title = "\(title): Messages"
+                            dispatch_async(dispatch_get_main_queue(), {
+                                if nil == self.labelTitle {
+                                    self.labelTitle = (self.appUser?.username)
+                                    self.messagesLabel.title = self.labelTitle!
+                                }
+                            })
                         
                             // Now load messages
                             self.getMessages()
@@ -205,7 +212,8 @@ class ViewTableViewController: UITableViewController {
                 })
             }
             else {
-                print("Error performing query")
+                let alert = UIAlertController(title: "Message Retrieval", message: "Error performing query", preferredStyle: .Alert)
+                self.presentSimpleAlert(alert, animated: true)
             }
         }
     }
@@ -217,11 +225,13 @@ class ViewTableViewController: UITableViewController {
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
         publicDB.saveRecord(record) { savedRecord, error in
             if error == nil {
-                print("User saved")
-                self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
-            
-//                let title: String = (self.appUser?.username)!
-//                self.messagesLabel.title = "\(title): Messages"
+                self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)            
+                dispatch_async(dispatch_get_main_queue(), {
+                    if nil == self.labelTitle {
+                        self.labelTitle = (self.appUser?.username)
+                        self.messagesLabel.title = self.labelTitle!
+                    }
+                })
             
                 // Now load messages
                 self.getMessages()
@@ -230,5 +240,12 @@ class ViewTableViewController: UITableViewController {
                 print("Error creating app user")
             }
         }
+    }
+
+    
+    func presentSimpleAlert(alert: UIAlertController, animated: Bool) {
+        dispatch_async(dispatch_get_main_queue(), {
+            self.presentViewController(alert, animated: true, completion: nil)
+        })
     }
 }

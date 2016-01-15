@@ -171,7 +171,7 @@
             </objects>
             <point key="canvasLocation" x="2244" y="349"/>
         </scene>
-        <!--Messages-->
+        <!--View Table View Controller-->
         <scene sceneID="nV3-XI-PCc">
             <objects>
                 <tableViewController id="70w-CU-BET" customClass="ViewTableViewController" customModule="Cryptext" customModuleProvider="target" sceneMemberID="viewController">
@@ -213,7 +213,7 @@
                             <outlet property="delegate" destination="70w-CU-BET" id="Fpe-7N-x0B"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Messages" id="Afi-dX-wAT"/>
+                    <navigationItem key="navigationItem" id="Afi-dX-wAT"/>
                     <connections>
                         <outlet property="messagesLabel" destination="Afi-dX-wAT" id="AYn-Fv-w8Q"/>
                     </connections>

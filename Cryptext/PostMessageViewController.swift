@@ -75,24 +75,22 @@ class PostMessageViewController: UIViewController {
         record["date"] = message.date
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
         publicDB.saveRecord(record) { savedRecord, error in
-            var alertMessage = "Error creating message"
-            if error == nil {
-                // Display status
-                alertMessage = "Message posted to \(message.to)"
-            }
-            else {
-                if let description = error?.description {
-                    alertMessage = description
-                }
-            }
-            
-            let alert = UIAlertController(title: "Message Post", message: alertMessage, preferredStyle: .Alert)
+            let alert = UIAlertController(title: "Message Post", message: "Error creating message", preferredStyle: .Alert)
             alert.addAction(UIAlertAction(title: "Okay", style: .Cancel, handler: { (alertAction) -> Void in
                 // Pop current view of stack
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     self.navigationController?.popViewControllerAnimated(false)
                 })
             }))
+            if error == nil {
+                // Display status
+                alert.message = "Message posted to \(message.to)"
+            }
+            else {
+                if let description = error?.description {
+                    alert.message = description
+                }
+            }
 
             // Now present alert
             dispatch_async(dispatch_get_main_queue(), {
