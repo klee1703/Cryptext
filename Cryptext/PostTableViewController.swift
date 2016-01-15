@@ -213,7 +213,8 @@ class PostTableViewController: UITableViewController {
                 self.getAppUsers()
             }
             else {
-                print("Error creating app user")
+                print(error?.description)
+                print(error.debugDescription)
             }
         }
     }
