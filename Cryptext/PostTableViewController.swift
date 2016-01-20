@@ -13,6 +13,7 @@ class PostTableViewController: UITableViewController {
     var appUser: AppUser?
     var appUsers: [AppUser] = []
     var toUsername: String?
+    var alertMessage: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -166,19 +167,8 @@ class PostTableViewController: UITableViewController {
                         if results!.isEmpty {
                             // No username exists for this account, create one
                             dispatch_async(dispatch_get_main_queue(), {
-                                let alert = UIAlertController(title: "App Username", message: "Create your unique App username", preferredStyle: UIAlertControllerStyle.Alert)
-                                let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
-                                    let usernameText = alert.textFields![0] as UITextField
-                                    self.setUsername(usernameText.text!, userID: userID)
-                                    
-                                })
-                                alert.addAction(usernameAction);
-                                alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (alertAction) -> Void in
-                                }))
-                                alert.addTextFieldWithConfigurationHandler { (textField) in
-                                    textField.placeholder = "username"
-                                }
-                                self.presentViewController(alert, animated:true, completion:nil)
+                                let alert = self.getUsernameViewController("App Username", message: "Create your unique App username", userID: userID)
+                                self.presentViewController(alert, animated: true, completion: nil)
                             })
                         }
                         else {
@@ -201,28 +191,83 @@ class PostTableViewController: UITableViewController {
         }
     }
     
+    
     func setUsername(text: String, userID: CKRecordID) {
-        let record = CKRecord(recordType: "AppUser")
-        record["userRef"] = CKReference(recordID: userID, action: .None)
-        record["username"] = text
+        // First verify the name not already in use
+        let predicate = NSPredicate(format: "username == %@", text)
+        let query = CKQuery(recordType: "AppUser", predicate: predicate)
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-        publicDB.saveRecord(record) { savedRecord, error in
+        publicDB.performQuery(query, inZoneWithID: nil) {results, error in
             if error == nil {
-                print("User saved")
-                self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
-                self.getAppUsers()
+                // process - check if record found
+                if results != nil && results!.count > 0 {
+                    // userAlert with username found, display alert
+                    dispatch_async(dispatch_get_main_queue(), {
+                        let alert = self.getUsernameViewController("Duplicate Username", message: "Create your unique App username", userID: userID)
+                        self.presentViewController(alert, animated: true, completion: nil)
+                    })
+                }
+                else {
+                    // No record with this username, create one!
+                    let record = CKRecord(recordType: "AppUser")
+                    record["userRef"] = CKReference(recordID: userID, action: .None)
+                    record["username"] = text
+                    publicDB.saveRecord(record) { savedRecord, error in
+                        if error == nil {
+                            // Set current user
+                            self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
+                            
+                            // Now load users
+                            self.getAppUsers()
+                        }
+                        else {
+                            let alert = UIAlertController(title: "Creating User", message: error!.description, preferredStyle: UIAlertControllerStyle.Alert)
+                            dispatch_async(dispatch_get_main_queue(), {
+                                self.presentSimpleAlert(alert, animated: true)
+                            })
+                        }
+                    }  // publicDB.saveRecord
+                }
             }
             else {
-                print(error?.description)
-                print(error.debugDescription)
+                // Error with query, display alert
+                let alert = UIAlertController(title: "User Query", message: error!.description, preferredStyle: UIAlertControllerStyle.Alert)
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.presentSimpleAlert(alert, animated: true)
+                })
             }
-        }
+        }  // performQuery
     }
-    
+
     
     func presentSimpleAlert(alert: UIAlertController, animated: Bool) {
         dispatch_async(dispatch_get_main_queue(), {
             self.presentViewController(alert, animated: true, completion: nil)
         })
+    }
+
+    
+    func getUsernameViewController(title: String, message: String, userID: CKRecordID) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
+            let usernameText = alert.textFields![0] as UITextField
+            self.setUsername(usernameText.text!, userID: userID)
+            
+        })
+        alert.addAction(usernameAction)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (alertAction) -> Void in
+        }))
+        alert.addTextFieldWithConfigurationHandler { (textField) in
+            textField.placeholder = "username"
+        }
+        
+        return alert
+    }
+
+    
+    func getSimpleAlertController(title: String, message: String) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        
+        return alert
     }
 }

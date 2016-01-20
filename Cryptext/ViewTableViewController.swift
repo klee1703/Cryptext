@@ -180,13 +180,14 @@ class ViewTableViewController: UITableViewController {
                         }
                     }
                     else {
-                        print("Error performing query")
-                        print(error)
+                        let alert = UIAlertController(title: "User Query", message: error?.description, preferredStyle: .Alert)
+                        self.presentSimpleAlert(alert, animated: true)
                     }
                 }
             }
             else {
-                print("Error retrieving iCloud user ID")
+                let alert = UIAlertController(title: "User Query", message: "Error retrieving iCloud user ID", preferredStyle: .Alert)
+                self.presentSimpleAlert(alert, animated: true)
             }
         }
     }
@@ -218,28 +219,61 @@ class ViewTableViewController: UITableViewController {
         }
     }
     
+    
     func setUsername(text: String, userID: CKRecordID) {
-        let record = CKRecord(recordType: "AppUser")
-        record["userRef"] = CKReference(recordID: userID, action: .None)
-        record["username"] = text
+        let alert = UIAlertController(title: "", message: "", preferredStyle: .Alert)
+        // First verify the name not already in use
+        let predicate = NSPredicate(format: "username == %@", text)
+        let query = CKQuery(recordType: "AppUser", predicate: predicate)
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-        publicDB.saveRecord(record) { savedRecord, error in
+        publicDB.performQuery(query, inZoneWithID: nil) {results, error in
             if error == nil {
-                self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)            
-                dispatch_async(dispatch_get_main_queue(), {
-                    if nil == self.labelTitle {
-                        self.labelTitle = (self.appUser?.username)
-                        self.messagesLabel.title = self.labelTitle!
-                    }
-                })
-            
-                // Now load messages
-                self.getMessages()
+                // process - check if record found
+                if results != nil && results!.count > 0 {
+                    // Record with username found, display alert
+                    alert.title = "Message Retrieval"
+                    alert.message = "Username already in use, enter another"
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.presentSimpleAlert(alert, animated: true)
+                    })
+                }
+                else {
+                    // No record with this username, create one!
+                    let record = CKRecord(recordType: "AppUser")
+                    record["userRef"] = CKReference(recordID: userID, action: .None)
+                    record["username"] = text
+                    publicDB.saveRecord(record) { savedRecord, error in
+                        if error == nil {
+                            self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
+                            dispatch_async(dispatch_get_main_queue(), {
+                                if nil == self.labelTitle {
+                                    self.labelTitle = (self.appUser?.username)
+                                    self.messagesLabel.title = self.labelTitle!
+                                }
+                            })
+                            
+                            // Now load messages
+                            self.getMessages()
+                        }
+                        else {
+                            alert.title = "Creating User"
+                            alert.message = error!.description
+                            dispatch_async(dispatch_get_main_queue(), {
+                                self.presentSimpleAlert(alert, animated: true)
+                            })
+                        }
+                    }  // publicDB.saveRecord
+                }
             }
             else {
-                print("Error creating app user")
+                // Error with query, display alert
+                alert.title = "User Query"
+                alert.message = error!.description
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.presentSimpleAlert(alert, animated: true)
+                })
             }
-        }
+        }  // performQuery
     }
 
     
@@ -247,5 +281,23 @@ class ViewTableViewController: UITableViewController {
         dispatch_async(dispatch_get_main_queue(), {
             self.presentViewController(alert, animated: true, completion: nil)
         })
+    }
+    
+    
+    func getUsernameViewController(title: String, message: String, userID: CKRecordID) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
+            let usernameText = alert.textFields![0] as UITextField
+            self.setUsername(usernameText.text!, userID: userID)
+            
+        })
+        alert.addAction(usernameAction)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (alertAction) -> Void in
+        }))
+        alert.addTextFieldWithConfigurationHandler { (textField) in
+            textField.placeholder = "username"
+        }
+        
+        return alert
     }
 }
