@@ -12,7 +12,7 @@ import CloudKit
 class PostMessageViewController: UIViewController {
     var appUser: AppUser?
     var toUsername: String?
-
+    
     @IBOutlet weak var message: UITextView!
     
     @IBAction func postMessage(sender: UIButton) {
@@ -36,9 +36,6 @@ class PostMessageViewController: UIViewController {
             
             // Post to cloud
             postSecureMessage(SecureMessage(to: toUsername!, from: appUser!.username, message: encryptedMessage, date: date))
-
-            // Return to parent view in navigation
-//            self.navigationController?.popViewControllerAnimated(true)
         }
      }
     
@@ -47,8 +44,10 @@ class PostMessageViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         message.layer.cornerRadius = 5
-        message.layer.borderColor = UIColor.purpleColor().CGColor
-        message.layer.borderWidth = 1
+//        message.layer.borderColor = UIColor.lightGrayColor().CGColor
+//        message.layer.borderWidth = 1
+//        message.setContentOffset(CGPoint.zero, animated: false)
+
     }
 
     override func didReceiveMemoryWarning() {

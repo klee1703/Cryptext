@@ -25,14 +25,13 @@ class ViewMessageViewController: UIViewController {
         }))
         presentSimpleAlert(alert, animated: true)
     }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Set text area border
         message.layer.cornerRadius = 5
-        message.layer.borderColor = UIColor.purpleColor().CGColor
-        message.layer.borderWidth = 1
         
         // Get credential
         let sharedSecret = getSharedSecret((secureMessage?.to)!, from: (secureMessage?.from)!, date: (secureMessage?.date)!)
@@ -52,14 +51,16 @@ class ViewMessageViewController: UIViewController {
         }
     }
 
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
-    func deleteRecord(message: SecureMessage) {
+    
+    func deleteRecord(secureMessage: SecureMessage) {
         // Retrieve record in database
-        let predicate = NSPredicate(format: "to == %@ AND from == %@ AND date == %@", (message.to), message.from, message.date)
+        let predicate = NSPredicate(format: "to == %@ AND from == %@ AND date == %@", (secureMessage.to), secureMessage.from, secureMessage.date)
         let query = CKQuery(recordType: "SecureMessage", predicate: predicate)
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
         publicDB.performQuery(query, inZoneWithID: nil) {results, error in
@@ -79,7 +80,7 @@ class ViewMessageViewController: UIViewController {
                         publicDB.deleteRecordWithID(record.recordID, completionHandler: { (recordID, error) -> Void in
                             // Process results of delete
                             if error == nil {
-                                alert.message = "Message from \(message.from) deleted"
+                                alert.message = "Message from \(secureMessage.from) deleted"
                             }
                             else {
                                 if let description = error?.description {

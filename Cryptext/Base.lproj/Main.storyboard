@@ -50,50 +50,40 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter Message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lac-d0-HXv">
-                                <rect key="frame" x="206" y="72" width="188" height="53"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="188" id="7Xc-Bb-zwh"/>
-                                    <constraint firstAttribute="height" constant="53" id="qDT-Ro-mFX"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="Papyrus" family="Papyrus" pointSize="28"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="81H-Gt-8OU">
-                                <rect key="frame" x="20" y="133" width="560" height="312"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="312" id="hmU-dn-HN9"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nLB-l8-baz">
-                                <rect key="frame" x="259" y="453" width="83" height="30"/>
+                                <rect key="frame" x="227" y="64" width="147" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="8D8-lc-9Dr"/>
-                                    <constraint firstAttribute="width" constant="83" id="O2l-R6-jTR"/>
+                                    <constraint firstAttribute="height" constant="50" id="8D8-lc-9Dr"/>
+                                    <constraint firstAttribute="width" constant="147" id="O2l-R6-jTR"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" name="Papyrus" family="Papyrus" pointSize="24"/>
-                                <state key="normal" title="Post"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <state key="normal" title="Post Message"/>
                                 <connections>
                                     <action selector="postMessage:" destination="NUE-2W-m0h" eventType="touchUpInside" id="4u0-50-G2E"/>
                                 </connections>
                             </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="8Kc-tx-Y6n">
+                                <rect key="frame" x="20" y="115" width="560" height="240"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="240" id="GLe-9D-m34"/>
+                                    <constraint firstAttribute="height" constant="240" id="pRY-0v-VJZ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="0.90588235294117647" blue="0.72941176470588232" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="Lac-d0-HXv" firstAttribute="top" secondItem="7Uh-IS-TFJ" secondAttribute="bottom" constant="8" id="0mQ-a4-uLV"/>
-                            <constraint firstItem="nLB-l8-baz" firstAttribute="top" secondItem="81H-Gt-8OU" secondAttribute="bottom" constant="8" id="7du-03-1V2"/>
                             <constraint firstItem="nLB-l8-baz" firstAttribute="centerX" secondItem="SWg-ZJ-Upo" secondAttribute="centerX" id="AUc-e3-g2u"/>
-                            <constraint firstItem="81H-Gt-8OU" firstAttribute="top" secondItem="Lac-d0-HXv" secondAttribute="bottom" constant="8" id="Faj-dU-cd6"/>
-                            <constraint firstItem="81H-Gt-8OU" firstAttribute="centerX" secondItem="SWg-ZJ-Upo" secondAttribute="centerX" id="XBg-hS-Rbp"/>
-                            <constraint firstItem="81H-Gt-8OU" firstAttribute="leading" secondItem="SWg-ZJ-Upo" secondAttribute="leadingMargin" id="aE5-U5-ERS"/>
-                            <constraint firstItem="Lac-d0-HXv" firstAttribute="centerX" secondItem="SWg-ZJ-Upo" secondAttribute="centerX" id="oKq-nw-ODc"/>
+                            <constraint firstItem="8Kc-tx-Y6n" firstAttribute="leading" secondItem="SWg-ZJ-Upo" secondAttribute="leadingMargin" id="XQp-hp-xzN"/>
+                            <constraint firstItem="nLB-l8-baz" firstAttribute="top" secondItem="7Uh-IS-TFJ" secondAttribute="bottom" id="f45-MD-UoA"/>
+                            <constraint firstItem="8Kc-tx-Y6n" firstAttribute="centerX" secondItem="nLB-l8-baz" secondAttribute="centerX" id="iVY-SF-IAy"/>
+                            <constraint firstItem="8Kc-tx-Y6n" firstAttribute="top" secondItem="nLB-l8-baz" secondAttribute="bottom" constant="1" id="jdr-Jx-b6U"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="message" destination="81H-Gt-8OU" id="kjQ-sZ-vTN"/>
+                        <outlet property="message" destination="8Kc-tx-Y6n" id="ejR-Er-zCe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CFf-Jc-G0Y" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -112,35 +102,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="View Message" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XWF-WV-mMd">
-                                <rect key="frame" x="206" y="72" width="188" height="53"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="53" id="LPU-7p-tG7"/>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="188" id="Pey-05-7aq"/>
-                                    <constraint firstAttribute="height" constant="53" id="PkR-hL-Gfv"/>
-                                    <constraint firstAttribute="width" constant="188" id="hkH-j7-KyI"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="Papyrus" family="Papyrus" pointSize="28"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iFO-8f-XUe">
-                                <rect key="frame" x="20" y="123" width="560" height="312"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="312" id="azV-hc-ysi"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KWA-wc-O9A">
-                                <rect key="frame" x="259" y="443" width="83" height="30"/>
+                                <rect key="frame" x="259" y="72" width="83" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="6aV-Lo-aHv"/>
                                     <constraint firstAttribute="width" constant="83" id="6v6-yi-88D"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="83" id="b0b-YE-f23"/>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="rcd-y3-6hQ"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" name="Papyrus" family="Papyrus" pointSize="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <state key="normal" title="Delete"/>
                                 <variation key="default">
                                     <mask key="constraints">
@@ -151,20 +121,25 @@
                                     <action selector="deleteMessage:" destination="neB-tJ-iZU" eventType="touchUpInside" id="Vlf-3z-IhW"/>
                                 </connections>
                             </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="IQZ-sq-Wbk">
+                                <rect key="frame" x="20" y="110" width="560" height="228"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="XWF-WV-mMd" firstAttribute="top" secondItem="t7E-XG-aRO" secondAttribute="bottom" constant="8" id="21t-6E-yQw"/>
-                            <constraint firstItem="iFO-8f-XUe" firstAttribute="top" secondItem="t7E-XG-aRO" secondAttribute="bottom" constant="59" id="2QO-X9-JDE"/>
-                            <constraint firstItem="KWA-wc-O9A" firstAttribute="top" secondItem="XWF-WV-mMd" secondAttribute="bottom" constant="318" id="4Dt-S6-dFU"/>
-                            <constraint firstItem="XWF-WV-mMd" firstAttribute="centerX" secondItem="RhZ-SU-KkT" secondAttribute="centerX" id="4ze-eN-yg4"/>
-                            <constraint firstItem="iFO-8f-XUe" firstAttribute="leading" secondItem="RhZ-SU-KkT" secondAttribute="leadingMargin" id="8TC-Ce-OCQ"/>
+                            <constraint firstItem="IQZ-sq-Wbk" firstAttribute="top" secondItem="KWA-wc-O9A" secondAttribute="bottom" constant="8" id="6Pe-lm-wQx"/>
+                            <constraint firstItem="s7z-5D-Cfg" firstAttribute="top" secondItem="IQZ-sq-Wbk" secondAttribute="bottom" constant="213" id="CT2-vY-mZO"/>
+                            <constraint firstItem="IQZ-sq-Wbk" firstAttribute="leading" secondItem="RhZ-SU-KkT" secondAttribute="leadingMargin" id="NSv-0a-aJa"/>
+                            <constraint firstItem="KWA-wc-O9A" firstAttribute="top" secondItem="t7E-XG-aRO" secondAttribute="bottom" constant="8" symbolic="YES" id="YOa-To-rOJ"/>
                             <constraint firstItem="KWA-wc-O9A" firstAttribute="centerX" secondItem="RhZ-SU-KkT" secondAttribute="centerX" id="ZQH-Ya-Sn2"/>
-                            <constraint firstItem="iFO-8f-XUe" firstAttribute="centerX" secondItem="RhZ-SU-KkT" secondAttribute="centerX" id="agm-Nu-RYi"/>
+                            <constraint firstItem="IQZ-sq-Wbk" firstAttribute="centerX" secondItem="RhZ-SU-KkT" secondAttribute="centerX" id="d99-iV-S0K"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="message" destination="iFO-8f-XUe" id="Bmn-Om-rXg"/>
+                        <outlet property="message" destination="IQZ-sq-Wbk" id="jeV-ar-Wc6"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f2X-eN-zcN" userLabel="First Responder" sceneMemberID="firstResponder"/>
