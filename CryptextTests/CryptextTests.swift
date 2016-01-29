@@ -33,4 +33,9 @@ class CryptextTests: XCTestCase {
         }
     }
     
+    func testIsNetworkUp() {
+        let isUp = isNetworkUp()
+        XCTAssert(isUp == true, "Network should be up")
+    }
+    
 }

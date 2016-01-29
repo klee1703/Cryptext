@@ -31,6 +31,10 @@ class PostTableViewController: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
+        if isNetworkUp() {
+            print("Networking Up")
+        }
+        
         if isSignedIn() == false {
             // Popup icloud login screen
             let alert = UIAlertController(title: "Sign in to iCloud", message: "Sign in to your iCloud account to write records. On the Home screen, launch Settings, tap iCloud, and enter your Apple ID. Turn iCloud Drive on. If you don't have an iCloud account, tap Create a new Apple ID.", preferredStyle: .Alert)
@@ -147,7 +151,8 @@ class PostTableViewController: UITableViewController {
                 })
             }
             else {
-                print("Error performing query")
+                let alert = self.getSimpleAlertController("AppUsers Query", message: "Error performing query")
+                self.presentViewController(alert, animated:true, completion:nil)
             }
         }
     }

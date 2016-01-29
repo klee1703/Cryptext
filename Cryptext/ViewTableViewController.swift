@@ -29,6 +29,11 @@ class ViewTableViewController: UITableViewController {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        if isNetworkUp() {
+            print("Networking Up")
+        }
+        
         if let title = labelTitle {
              self.messagesLabel.title = title
         }
