@@ -30,23 +30,25 @@ class ViewTableViewController: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        if isNetworkUp() {
-            print("Networking Up")
-        }
-        
         if let title = labelTitle {
              self.messagesLabel.title = title
         }
         
-        if isSignedIn() == false {
-            // Popup icloud login screen
-            let alert = UIAlertController(title: "Sign in to iCloud", message: "Sign in to your iCloud account to write records. On the Home screen, launch Settings, tap iCloud, and enter your Apple ID. Turn iCloud Drive on. If you don't have an iCloud account, tap Create a new Apple ID.", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title:"Okay", style:.Cancel, handler:nil));
-            self.presentViewController(alert, animated:true, completion:nil)
+        if isNetworkUp() {
+            if isSignedIn() == false {
+                // Popup icloud login screen
+                let alert = UIAlertController(title: "Sign in to iCloud", message: "Sign in to your iCloud account to write records. On the Home screen, launch Settings, tap iCloud, and enter your Apple ID. Turn iCloud Drive on. If you don't have an iCloud account, tap Create a new Apple ID.", preferredStyle: .Alert)
+                alert.addAction(UIAlertAction(title:"Okay", style:.Cancel, handler:nil));
+                self.presentViewController(alert, animated:true, completion:nil)
+            }
+            else {
+                // Get/create app username
+                getAppUser()
+            }
         }
         else {
-            // Get/create app username
-            getAppUser()
+            let alert = UIAlertController(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.", preferredStyle: UIAlertControllerStyle.Alert)
+            self.presentViewController(alert, animated: true, completion: nil)
         }
     }
 
