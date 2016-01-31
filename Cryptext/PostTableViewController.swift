@@ -194,13 +194,14 @@ class PostTableViewController: UITableViewController {
                         }
                     }
                     else {
-                        print("Error performing query")
-                        print(error)
+                        let alert = UIAlertController(title: "Error Performing Query", message: error?.description, preferredStyle: UIAlertControllerStyle.Alert)
+                        self.presentViewController(alert, animated: true, completion: nil)
                     }
                 }
             }
             else {
-                print("Error retrieving iCloud user ID")
+                let alert = UIAlertController(title: "Error Retrieving iCloud User ID", message: error?.description, preferredStyle: UIAlertControllerStyle.Alert)
+                self.presentViewController(alert, animated: true, completion: nil)
             }
         }
     }

@@ -166,7 +166,6 @@ class ViewTableViewController: UITableViewController {
                                 textField.placeholder = "username"
                             }
                             self.presentViewController(alert, animated:true, completion:nil)
-                            print("No username, create one!")
                             })
                         }
                         else {
