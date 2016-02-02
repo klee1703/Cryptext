@@ -16,7 +16,7 @@ class ViewMessageViewController: UIViewController {
     
     @IBAction func deleteMessage(sender: UIButton) {
         // Delete from cloud
-        let alert = UIAlertController(title: "Confirm Delete", message: "Delete message from \((secureMessage?.from)!)?", preferredStyle: .Alert)
+        let alert = getStandardAlert(title: "Confirm Delete", message: "Delete message from \((secureMessage?.from)!)?")
         alert.addAction(UIAlertAction(title: "Delete", style: .Destructive, handler: { (alertAction) -> Void in
             // Delete method
             self.deleteRecord(self.secureMessage!)
@@ -46,7 +46,7 @@ class ViewMessageViewController: UIViewController {
             message.text = text
         }
         catch {
-            let alert = UIAlertController(title: "Message Decrypt", message: "Error decrypting message", preferredStyle: .Alert)
+            let alert = getStandardAlert(title: "Message Decrypt", message: "Error decrypting message")
             self.presentSimpleAlert(alert, animated: true)
         }
     }
@@ -65,7 +65,7 @@ class ViewMessageViewController: UIViewController {
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
         publicDB.performQuery(query, inZoneWithID: nil) {results, error in
             // Create alert
-            let alert = UIAlertController(title: "Message Delete", message: "Error deleting message", preferredStyle: .Alert)
+            let alert = getStandardAlert(title: "Message Delete", message: "Error deleting message")
             alert.addAction(UIAlertAction(title: "Okay", style: .Cancel, handler: { (alertAction) -> Void in
                 // Pop current view of stack
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in

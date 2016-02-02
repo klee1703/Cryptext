@@ -30,7 +30,7 @@ class PostTableViewController: UITableViewController {
             getAppUser()
         }
         else {
-            let alert = UIAlertController(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = getStandardAlert(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.")
             self.presentViewController(alert, animated: true, completion: nil)
         }
     }
@@ -47,7 +47,7 @@ class PostTableViewController: UITableViewController {
             }
         }
         else {
-            let alert = UIAlertController(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = getStandardAlert(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.")
             self.presentViewController(alert, animated: true, completion: nil)
         }
     }
@@ -160,7 +160,7 @@ class PostTableViewController: UITableViewController {
                 })
             }
             else {
-                let alert = self.getSimpleAlertController("AppUsers Query", message: "Error performing query")
+                let alert = getStandardAlert(title: "AppUsers Query", message: "Error performing query")
                 self.presentViewController(alert, animated:true, completion:nil)
             }
         }
@@ -194,13 +194,13 @@ class PostTableViewController: UITableViewController {
                         }
                     }
                     else {
-                        let alert = UIAlertController(title: "Error Performing Query", message: error?.description, preferredStyle: UIAlertControllerStyle.Alert)
+                        let alert = getStandardAlert(title: "Error Performing Query", message: (error?.description)!)
                         self.presentViewController(alert, animated: true, completion: nil)
                     }
                 }
             }
             else {
-                let alert = UIAlertController(title: "Error Retrieving iCloud User ID", message: error?.description, preferredStyle: UIAlertControllerStyle.Alert)
+                let alert = getStandardAlert(title: "Error Retrieving iCloud User ID", message: (error?.description)!)
                 self.presentViewController(alert, animated: true, completion: nil)
             }
         }
@@ -236,7 +236,7 @@ class PostTableViewController: UITableViewController {
                             self.getAppUsers()
                         }
                         else {
-                            let alert = UIAlertController(title: "Creating User", message: error!.description, preferredStyle: UIAlertControllerStyle.Alert)
+                            let alert = getStandardAlert(title: "Creating User", message: error!.description)
                             dispatch_async(dispatch_get_main_queue(), {
                                 self.presentSimpleAlert(alert, animated: true)
                             })
@@ -246,7 +246,7 @@ class PostTableViewController: UITableViewController {
             }
             else {
                 // Error with query, display alert
-                let alert = UIAlertController(title: "User Query", message: error!.description, preferredStyle: UIAlertControllerStyle.Alert)
+                let alert = getStandardAlert(title: "User Query", message: error!.description)
                 dispatch_async(dispatch_get_main_queue(), {
                     self.presentSimpleAlert(alert, animated: true)
                 })
@@ -263,7 +263,7 @@ class PostTableViewController: UITableViewController {
 
     
     func getUsernameViewController(title: String, message: String, userID: CKRecordID) -> UIAlertController {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        let alert = getStandardAlert(title: title, message: message)
         let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
             let usernameText = alert.textFields![0] as UITextField
             self.setUsername(usernameText.text!, userID: userID)
@@ -275,13 +275,6 @@ class PostTableViewController: UITableViewController {
         alert.addTextFieldWithConfigurationHandler { (textField) in
             textField.placeholder = "username"
         }
-        
-        return alert
-    }
-
-    
-    func getSimpleAlertController(title: String, message: String) -> UIAlertController {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
         
         return alert
     }

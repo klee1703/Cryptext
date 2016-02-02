@@ -19,7 +19,7 @@ class PostMessageViewController: UIViewController {
         // Validate
         if nil == message.text || message.text.isEmpty {
             // Display alert
-            let alert = UIAlertController(title: "Invalid message", message: "Please provide a valid (non-empty) message", preferredStyle: .Alert)
+            let alert = getStandardAlert(title: "Invalid message", message: "Please provide a valid (non-empty) message")
             alert.addAction(UIAlertAction(title:"Okay", style:.Cancel, handler:nil));
             self.presentViewController(alert, animated:true, completion:nil)
         }
@@ -44,10 +44,6 @@ class PostMessageViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         message.layer.cornerRadius = 5
-//        message.layer.borderColor = UIColor.lightGrayColor().CGColor
-//        message.layer.borderWidth = 1
-//        message.setContentOffset(CGPoint.zero, animated: false)
-
     }
 
     override func didReceiveMemoryWarning() {
@@ -74,7 +70,7 @@ class PostMessageViewController: UIViewController {
         record["date"] = message.date
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase
         publicDB.saveRecord(record) { savedRecord, error in
-            let alert = UIAlertController(title: "Message Post", message: "Error creating message", preferredStyle: .Alert)
+            let alert = getStandardAlert(title: "Message Post", message: "Error creating message")
             alert.addAction(UIAlertAction(title: "Okay", style: .Cancel, handler: { (alertAction) -> Void in
                 // Pop current view of stack
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in

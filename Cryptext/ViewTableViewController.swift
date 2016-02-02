@@ -37,7 +37,7 @@ class ViewTableViewController: UITableViewController {
         if isNetworkUp() {
             if isSignedIn() == false {
                 // Popup icloud login screen
-                let alert = UIAlertController(title: "Sign in to iCloud", message: "Sign in to your iCloud account to write records. On the Home screen, launch Settings, tap iCloud, and enter your Apple ID. Turn iCloud Drive on. If you don't have an iCloud account, tap Create a new Apple ID.", preferredStyle: .Alert)
+                let alert = getStandardAlert(title: "Sign in to iCloud", message: "Sign in to your iCloud account to write records. On the Home screen, launch Settings, tap iCloud, and enter your Apple ID. Turn iCloud Drive on. If you don't have an iCloud account, tap Create a new Apple ID.")
                 alert.addAction(UIAlertAction(title:"Okay", style:.Cancel, handler:nil));
                 self.presentViewController(alert, animated:true, completion:nil)
             }
@@ -47,7 +47,7 @@ class ViewTableViewController: UITableViewController {
             }
         }
         else {
-            let alert = UIAlertController(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = getStandardAlert(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.")
             self.presentViewController(alert, animated: true, completion: nil)
         }
     }
@@ -156,7 +156,7 @@ class ViewTableViewController: UITableViewController {
                         if results!.isEmpty {
                         // No username exists for this account, create one
                         dispatch_async(dispatch_get_main_queue(), {
-                            let alert = UIAlertController(title: "App Username", message: "Enter your unique App username", preferredStyle: UIAlertControllerStyle.Alert)
+                            let alert = getStandardAlert(title: "App Username", message: "Enter your unique App username")
                             let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
                                 let usernameText = alert.textFields![0] as UITextField
                                 self.setUsername(usernameText.text!, userID: userID)
@@ -186,13 +186,13 @@ class ViewTableViewController: UITableViewController {
                         }
                     }
                     else {
-                        let alert = UIAlertController(title: "User Query", message: error?.description, preferredStyle: .Alert)
+                        let alert = getStandardAlert(title: "User Query", message: (error?.description)!)
                         self.presentSimpleAlert(alert, animated: true)
                     }
                 }
             }
             else {
-                let alert = UIAlertController(title: "User Query", message: "Error retrieving iCloud user ID", preferredStyle: .Alert)
+                let alert = getStandardAlert(title: "User Query", message: "Error retrieving iCloud user ID")
                 self.presentSimpleAlert(alert, animated: true)
             }
         }
@@ -219,7 +219,7 @@ class ViewTableViewController: UITableViewController {
                 })
             }
             else {
-                let alert = UIAlertController(title: "Message Retrieval", message: "Error performing query", preferredStyle: .Alert)
+                let alert = getStandardAlert(title: "Message Retrieval", message: "Error performing query")
                 self.presentSimpleAlert(alert, animated: true)
             }
         }
@@ -227,7 +227,7 @@ class ViewTableViewController: UITableViewController {
     
     
     func setUsername(text: String, userID: CKRecordID) {
-        let alert = UIAlertController(title: "", message: "", preferredStyle: .Alert)
+        let alert = getStandardAlert(title: "", message: "")
         // First verify the name not already in use
         let predicate = NSPredicate(format: "username == %@", text)
         let query = CKQuery(recordType: "AppUser", predicate: predicate)
@@ -291,7 +291,7 @@ class ViewTableViewController: UITableViewController {
     
     
     func getUsernameViewController(title: String, message: String, userID: CKRecordID) -> UIAlertController {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        let alert = getStandardAlert(title: title, message: message)
         let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
             let usernameText = alert.textFields![0] as UITextField
             self.setUsername(usernameText.text!, userID: userID)

@@ -8,6 +8,7 @@
 
 import Foundation
 import CloudKit
+import UIKit
 
 struct AppUser {
     var userRef: CKReference
@@ -53,6 +54,12 @@ func isSignedIn() -> Bool {
 
 func getSharedSecret(to: String, from: String, date: NSDate) -> String {
     return "\(to).\(from).\(date.description)"
+}
+
+
+func getStandardAlert(title title: String, message: String) -> UIAlertController {
+    let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+    return alert
 }
 
 extension NSURLSession {
