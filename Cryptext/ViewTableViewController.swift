@@ -75,7 +75,12 @@ class ViewTableViewController: UITableViewController {
 
         // Configure the cell...
         cell.textLabel?.text = "From: \(self.messages[indexPath.row].from)"
-        cell.detailTextLabel?.text = self.messages[indexPath.row].date.description
+        var description = self.messages[indexPath.row].date.description
+        let subjectText = self.messages[indexPath.row].subject
+        if !subjectText.isEmpty {
+            description = "\(subjectText) (\(description))"
+        }
+        cell.detailTextLabel?.text = description
     
         return cell
     }
@@ -209,7 +214,11 @@ class ViewTableViewController: UITableViewController {
                 // process - decrypt and view
                 self.messages = []
                 for record in results! {
-                    let message = SecureMessage(to: record["to"] as! String, from: record["from"] as! String, message: record["message"] as! NSData, date: record["date"] as! NSDate)
+                    var subjectText = ""
+                    if let subject = record["subject"] {
+                        subjectText = subject as! String
+                    }
+                    let message = SecureMessage(to: record["to"] as! String, from: record["from"] as! String, subject: subjectText, message: record["message"] as! NSData, date: record["date"] as! NSDate)
                     self.messages.append(message)
                 }
                 

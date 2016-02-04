@@ -13,6 +13,7 @@ class PostMessageViewController: UIViewController {
     var appUser: AppUser?
     var toUsername: String?
     
+    @IBOutlet weak var subject: UITextField!
     @IBOutlet weak var message: UITextView!
     
     @IBAction func postMessage(sender: UIButton) {
@@ -25,9 +26,12 @@ class PostMessageViewController: UIViewController {
         }
         else {
             // Retrieve message text
-            print("Posting message")
-            let text = message.text
-            print(text)
+            var subjectText = ""
+            if let text = subject.text {
+                if !text.isEmpty {
+                    subjectText = text
+                }
+            }
             
             // Encrypt
             let date = NSDate()
@@ -35,7 +39,7 @@ class PostMessageViewController: UIViewController {
             let encryptedMessage = encryptMessage(message.text, credential: sharedSecret)
             
             // Post to cloud
-            postSecureMessage(SecureMessage(to: toUsername!, from: appUser!.username, message: encryptedMessage, date: date))
+            postSecureMessage(SecureMessage(to: toUsername!, from: appUser!.username, subject: subjectText, message: encryptedMessage, date: date))
         }
      }
     
@@ -66,6 +70,7 @@ class PostMessageViewController: UIViewController {
         let record = CKRecord(recordType: "SecureMessage")
         record["to"] = message.to
         record["from"] = message.from
+        record["subject"] = message.subject
         record["message"] = message.message
         record["date"] = message.date
         let publicDB = CKContainer.defaultContainer().publicCloudDatabase

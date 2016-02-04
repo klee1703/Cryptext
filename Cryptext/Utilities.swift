@@ -18,6 +18,7 @@ struct AppUser {
 struct SecureMessage {
     var to: String
     var from: String
+    var subject: String
     var message: NSData
     var date: NSDate
 }
