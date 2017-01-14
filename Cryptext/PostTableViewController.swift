@@ -31,24 +31,24 @@ class PostTableViewController: UITableViewController {
         }
         else {
             let alert = getStandardAlert(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.")
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if isNetworkUp() {
             if isSignedIn() == false {
                 // Popup icloud login screen
-                let alert = UIAlertController(title: "Sign in to iCloud", message: "Sign in to your iCloud account to write records. On the Home screen, launch Settings, tap iCloud, and enter your Apple ID. Turn iCloud Drive on. If you don't have an iCloud account, tap Create a new Apple ID.", preferredStyle: .Alert)
-                alert.addAction(UIAlertAction(title:"Okay", style:.Cancel, handler:nil));
-                self.presentViewController(alert, animated:true, completion:nil)
+                let alert = UIAlertController(title: "Sign in to iCloud", message: "Sign in to your iCloud account to write records. On the Home screen, launch Settings, tap iCloud, and enter your Apple ID. Turn iCloud Drive on. If you don't have an iCloud account, tap Create a new Apple ID.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title:"Okay", style:.cancel, handler:nil));
+                self.present(alert, animated:true, completion:nil)
             }
         }
         else {
             let alert = getStandardAlert(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.")
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -59,18 +59,18 @@ class PostTableViewController: UITableViewController {
     
     // MARK: - Table view data source
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Return the number of rows
         return self.appUsers.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("PostCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell", for: indexPath)
         
         // Configure the cell...
         cell.textLabel?.text = self.appUsers[indexPath.row].username
@@ -79,7 +79,7 @@ class PostTableViewController: UITableViewController {
     }
     
     // Mark the message being selected
-    override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath {
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath {
         self.toUsername = self.appUsers[indexPath.row].username
         
         return indexPath
@@ -123,13 +123,13 @@ class PostTableViewController: UITableViewController {
     // MARK: - Navigation
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         if (segue.identifier == "PostSegue")
         {
             // Get reference to the destination view controller
-            let dvc = segue.destinationViewController as! PostMessageViewController
+            let dvc = segue.destination as! PostMessageViewController
             
             // Pass any objects to the view controller here, like...
             dvc.appUser = appUser
@@ -141,8 +141,8 @@ class PostTableViewController: UITableViewController {
     func getAppUsers() {
         let predicate = NSPredicate(format: "TRUEPREDICATE")
         let query = CKQuery(recordType: "AppUser", predicate: predicate)
-        let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-        publicDB.performQuery(query, inZoneWithID: nil) {results, error in
+        let publicDB = CKContainer.default().publicCloudDatabase
+        publicDB.perform(query, inZoneWith: nil) {results, error in
             if error == nil {
                 // process
                 self.appUsers = []
@@ -155,13 +155,13 @@ class PostTableViewController: UITableViewController {
                 }
                 
                 // Reload data
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.tableView.reloadData()
                 })
             }
             else {
                 let alert = getStandardAlert(title: "AppUsers Query", message: "Error performing query")
-                self.presentViewController(alert, animated:true, completion:nil)
+                self.present(alert, animated:true, completion:nil)
             }
         }
     }
@@ -169,20 +169,20 @@ class PostTableViewController: UITableViewController {
     
     func getAppUser() {
         // Fetch iCloud user record ID
-        CKContainer.defaultContainer().fetchUserRecordIDWithCompletionHandler(){ recordID, error in
+        CKContainer.default().fetchUserRecordID(){ recordID, error in
             if error == nil {
                 // Now check if username already created for this account!
                 let userID = recordID!
-                let predicate = NSPredicate(format: "userRef == %@", CKReference(recordID: userID, action: CKReferenceAction.None))
+                let predicate = NSPredicate(format: "userRef == %@", CKReference(recordID: userID, action: CKReferenceAction.none))
                 let query = CKQuery(recordType: "AppUser", predicate: predicate)
-                let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-                publicDB.performQuery(query, inZoneWithID: nil) {results, error in
+                let publicDB = CKContainer.default().publicCloudDatabase
+                publicDB.perform(query, inZoneWith: nil) {results, error in
                     if error == nil {
                         if results!.isEmpty {
                             // No username exists for this account, create one
-                            dispatch_async(dispatch_get_main_queue(), {
+                            DispatchQueue.main.async(execute: {
                                 let alert = self.getUsernameViewController("App Username", message: "Create your unique App username", userID: userID)
-                                self.presentViewController(alert, animated: true, completion: nil)
+                                self.present(alert, animated: true, completion: nil)
                             })
                         }
                         else {
@@ -194,40 +194,40 @@ class PostTableViewController: UITableViewController {
                         }
                     }
                     else {
-                        let alert = getStandardAlert(title: "Error Performing Query", message: (error?.description)!)
-                        self.presentViewController(alert, animated: true, completion: nil)
+                        let alert = getStandardAlert(title: "Error Performing Query", message: (error.debugDescription))
+                        self.present(alert, animated: true, completion: nil)
                     }
                 }
             }
             else {
-                let alert = getStandardAlert(title: "Error Retrieving iCloud User ID", message: (error?.description)!)
-                self.presentViewController(alert, animated: true, completion: nil)
+                let alert = getStandardAlert(title: "Error Retrieving iCloud User ID", message: (error.debugDescription))
+                self.present(alert, animated: true, completion: nil)
             }
         }
     }
     
     
-    func setUsername(text: String, userID: CKRecordID) {
+    func setUsername(_ text: String, userID: CKRecordID) {
         // First verify the name not already in use
         let predicate = NSPredicate(format: "username == %@", text)
         let query = CKQuery(recordType: "AppUser", predicate: predicate)
-        let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-        publicDB.performQuery(query, inZoneWithID: nil) {results, error in
+        let publicDB = CKContainer.default().publicCloudDatabase
+        publicDB.perform(query, inZoneWith: nil) {results, error in
             if error == nil {
                 // process - check if record found
                 if results != nil && results!.count > 0 {
                     // userAlert with username found, display alert
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         let alert = self.getUsernameViewController("Duplicate Username", message: "Create your unique App username", userID: userID)
-                        self.presentViewController(alert, animated: true, completion: nil)
+                        self.present(alert, animated: true, completion: nil)
                     })
                 }
                 else {
                     // No record with this username, create one!
                     let record = CKRecord(recordType: "AppUser")
-                    record["userRef"] = CKReference(recordID: userID, action: .None)
-                    record["username"] = text
-                    publicDB.saveRecord(record) { savedRecord, error in
+                    record["userRef"] = CKReference(recordID: userID, action: .none)
+                    record["username"] = text as CKRecordValue?
+                    publicDB.save(record, completionHandler: { savedRecord, error in
                         if error == nil {
                             // Set current user
                             self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
@@ -236,18 +236,18 @@ class PostTableViewController: UITableViewController {
                             self.getAppUsers()
                         }
                         else {
-                            let alert = getStandardAlert(title: "Creating User", message: error!.description)
-                            dispatch_async(dispatch_get_main_queue(), {
+                            let alert = getStandardAlert(title: "Creating User", message: error.debugDescription)
+                            DispatchQueue.main.async(execute: {
                                 self.presentSimpleAlert(alert, animated: true)
                             })
                         }
-                    }  // publicDB.saveRecord
+                    })   // publicDB.saveRecord
                 }
             }
             else {
                 // Error with query, display alert
-                let alert = getStandardAlert(title: "User Query", message: error!.description)
-                dispatch_async(dispatch_get_main_queue(), {
+                let alert = getStandardAlert(title: "User Query", message: error.debugDescription)
+                DispatchQueue.main.async(execute: {
                     self.presentSimpleAlert(alert, animated: true)
                 })
             }
@@ -255,24 +255,24 @@ class PostTableViewController: UITableViewController {
     }
 
     
-    func presentSimpleAlert(alert: UIAlertController, animated: Bool) {
-        dispatch_async(dispatch_get_main_queue(), {
-            self.presentViewController(alert, animated: true, completion: nil)
+    func presentSimpleAlert(_ alert: UIAlertController, animated: Bool) {
+        DispatchQueue.main.async(execute: {
+            self.present(alert, animated: true, completion: nil)
         })
     }
 
     
-    func getUsernameViewController(title: String, message: String, userID: CKRecordID) -> UIAlertController {
+    func getUsernameViewController(_ title: String, message: String, userID: CKRecordID) -> UIAlertController {
         let alert = getStandardAlert(title: title, message: message)
-        let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
+        let usernameAction = UIAlertAction(title: "Save", style: .default, handler: { (action) -> Void in
             let usernameText = alert.textFields![0] as UITextField
             self.setUsername(usernameText.text!, userID: userID)
             
         })
         alert.addAction(usernameAction)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (alertAction) -> Void in
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (alertAction) -> Void in
         }))
-        alert.addTextFieldWithConfigurationHandler { (textField) in
+        alert.addTextField { (textField) in
             textField.placeholder = "username"
         }
         

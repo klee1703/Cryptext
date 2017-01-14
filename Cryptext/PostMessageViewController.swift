@@ -16,13 +16,13 @@ class PostMessageViewController: UIViewController {
     @IBOutlet weak var subject: UITextField!
     @IBOutlet weak var message: UITextView!
     
-    @IBAction func postMessage(sender: UIButton) {
+    @IBAction func postMessage(_ sender: UIButton) {
         // Validate
         if nil == message.text || message.text.isEmpty {
             // Display alert
             let alert = getStandardAlert(title: "Invalid message", message: "Please provide a valid (non-empty) message")
-            alert.addAction(UIAlertAction(title:"Okay", style:.Cancel, handler:nil));
-            self.presentViewController(alert, animated:true, completion:nil)
+            alert.addAction(UIAlertAction(title:"Okay", style:.cancel, handler:nil));
+            self.present(alert, animated:true, completion:nil)
         }
         else {
             // Retrieve message text
@@ -34,7 +34,7 @@ class PostMessageViewController: UIViewController {
             }
             
             // Encrypt
-            let date = NSDate()
+            let date = Date()
             let sharedSecret = getSharedSecret(toUsername!, from: appUser!.username, date: date)
             let encryptedMessage = encryptMessage(message.text, credential: sharedSecret)
             
@@ -66,20 +66,20 @@ class PostMessageViewController: UIViewController {
     }
     */
 
-    func postSecureMessage(message: SecureMessage) {
+    func postSecureMessage(_ message: SecureMessage) {
         let record = CKRecord(recordType: "SecureMessage")
-        record["to"] = message.to
-        record["from"] = message.from
-        record["subject"] = message.subject
-        record["message"] = message.message
-        record["date"] = message.date
-        let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-        publicDB.saveRecord(record) { savedRecord, error in
+        record["to"] = message.to as CKRecordValue?
+        record["from"] = message.from as CKRecordValue?
+        record["subject"] = message.subject as CKRecordValue?
+        record["message"] = message.message as CKRecordValue?
+        record["date"] = message.date as CKRecordValue?
+        let publicDB = CKContainer.default().publicCloudDatabase
+        publicDB.save(record, completionHandler: { savedRecord, error in
             let alert = getStandardAlert(title: "Message Post", message: "Error creating message")
-            alert.addAction(UIAlertAction(title: "Okay", style: .Cancel, handler: { (alertAction) -> Void in
+            alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: { (alertAction) -> Void in
                 // Pop current view of stack
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    self.navigationController?.popViewControllerAnimated(false)
+                DispatchQueue.main.async(execute: { () -> Void in
+                    _ = self.navigationController?.popViewController(animated: false)
                 })
             }))
             if error == nil {
@@ -87,15 +87,13 @@ class PostMessageViewController: UIViewController {
                 alert.message = "Message posted to \(message.to)"
             }
             else {
-                if let description = error?.description {
-                    alert.message = description
-                }
+                alert.message = error.debugDescription
             }
 
             // Now present alert
-            dispatch_async(dispatch_get_main_queue(), {
-                self.presentViewController(alert, animated: true, completion: nil)
+            DispatchQueue.main.async(execute: {
+                self.present(alert, animated: true, completion: nil)
             })
-        }
+        }) 
     }
 }

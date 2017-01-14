@@ -27,7 +27,7 @@ class ViewTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if let title = labelTitle {
@@ -38,8 +38,8 @@ class ViewTableViewController: UITableViewController {
             if isSignedIn() == false {
                 // Popup icloud login screen
                 let alert = getStandardAlert(title: "Sign in to iCloud", message: "Sign in to your iCloud account to write records. On the Home screen, launch Settings, tap iCloud, and enter your Apple ID. Turn iCloud Drive on. If you don't have an iCloud account, tap Create a new Apple ID.")
-                alert.addAction(UIAlertAction(title:"Okay", style:.Cancel, handler:nil));
-                self.presentViewController(alert, animated:true, completion:nil)
+                alert.addAction(UIAlertAction(title:"Okay", style:.cancel, handler:nil));
+                self.present(alert, animated:true, completion:nil)
             }
             else {
                 // Get/create app username
@@ -48,7 +48,7 @@ class ViewTableViewController: UITableViewController {
         }
         else {
             let alert = getStandardAlert(title: "Cellular Data is Turned Off", message: "Turn on cellular dta or use Wi-Fi to access data.")
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
         }
     }
 
@@ -59,18 +59,18 @@ class ViewTableViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // Return the number of sections
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Return the number of rows
         return self.messages.count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("ViewCell", forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ViewCell", for: indexPath)
     
 
         // Configure the cell...
@@ -121,11 +121,11 @@ class ViewTableViewController: UITableViewController {
     */
 
     // Mark the message being selected
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         secureMessage = messages[indexPath.row]
     }
     
-    override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         secureMessage = messages[indexPath.row]
         return indexPath
     }
@@ -133,13 +133,13 @@ class ViewTableViewController: UITableViewController {
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         if (segue.identifier == "ViewSegue")
         {
             // Get reference to the destination view controller
-            let dvc = segue.destinationViewController as! ViewMessageViewController
+            let dvc = segue.destination as! ViewMessageViewController
             
             // Pass any objects to the view controller here, like...
             dvc.secureMessage = secureMessage!
@@ -149,28 +149,28 @@ class ViewTableViewController: UITableViewController {
     
     func getAppUser() {
         // Fetch iCloud user record ID
-        CKContainer.defaultContainer().fetchUserRecordIDWithCompletionHandler(){ recordID, error in
+        CKContainer.default().fetchUserRecordID(){ recordID, error in
             if error == nil {
                 // Now check if username already created for this account!
                 let userID = recordID!
-                let predicate = NSPredicate(format: "userRef == %@", CKReference(recordID: userID, action: CKReferenceAction.None))
+                let predicate = NSPredicate(format: "userRef == %@", CKReference(recordID: userID, action: CKReferenceAction.none))
                 let query = CKQuery(recordType: "AppUser", predicate: predicate)
-                let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-                publicDB.performQuery(query, inZoneWithID: nil) {results, error in
+                let publicDB = CKContainer.default().publicCloudDatabase
+                publicDB.perform(query, inZoneWith: nil) {results, error in
                     if error == nil {
                         if results!.isEmpty {
                         // No username exists for this account, create one
-                        dispatch_async(dispatch_get_main_queue(), {
+                        DispatchQueue.main.async(execute: {
                             let alert = getStandardAlert(title: "App Username", message: "Enter your unique App username")
-                            let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
+                            let usernameAction = UIAlertAction(title: "Save", style: .default, handler: { (action) -> Void in
                                 let usernameText = alert.textFields![0] as UITextField
                                 self.setUsername(usernameText.text!, userID: userID)
                                 })
                             alert.addAction(usernameAction);
-                            alert.addTextFieldWithConfigurationHandler { (textField) in
+                            alert.addTextField { (textField) in
                                 textField.placeholder = "username"
                             }
-                            self.presentViewController(alert, animated:true, completion:nil)
+                            self.present(alert, animated:true, completion:nil)
                             })
                         }
                         else {
@@ -179,7 +179,7 @@ class ViewTableViewController: UITableViewController {
                                 self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
                             }
                         
-                            dispatch_async(dispatch_get_main_queue(), {
+                            DispatchQueue.main.async(execute: {
                                 if nil == self.labelTitle {
                                     self.labelTitle = (self.appUser?.username)
                                     self.messagesLabel.title = self.labelTitle!
@@ -191,7 +191,7 @@ class ViewTableViewController: UITableViewController {
                         }
                     }
                     else {
-                        let alert = getStandardAlert(title: "User Query", message: (error?.description)!)
+                        let alert = getStandardAlert(title: "User Query", message: (error.debugDescription))
                         self.presentSimpleAlert(alert, animated: true)
                     }
                 }
@@ -208,8 +208,8 @@ class ViewTableViewController: UITableViewController {
     func getMessages() {
         let predicate = NSPredicate(format: "to == %@", appUser!.username)
         let query = CKQuery(recordType: "SecureMessage", predicate: predicate)
-        let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-        publicDB.performQuery(query, inZoneWithID: nil) {results, error in
+        let publicDB = CKContainer.default().publicCloudDatabase
+        publicDB.perform(query, inZoneWith: nil) {results, error in
             if error == nil {
                 // process - decrypt and view
                 self.messages = []
@@ -218,12 +218,12 @@ class ViewTableViewController: UITableViewController {
                     if let subject = record["subject"] {
                         subjectText = subject as! String
                     }
-                    let message = SecureMessage(to: record["to"] as! String, from: record["from"] as! String, subject: subjectText, message: record["message"] as! NSData, date: record["date"] as! NSDate)
+                    let message = SecureMessage(to: record["to"] as! String, from: record["from"] as! String, subject: subjectText, message: record["message"] as! Data, date: record["date"] as! Date)
                     self.messages.append(message)
                 }
                 
                 // Reload data
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.tableView.reloadData()
                 })
             }
@@ -235,32 +235,32 @@ class ViewTableViewController: UITableViewController {
     }
     
     
-    func setUsername(text: String, userID: CKRecordID) {
+    func setUsername(_ text: String, userID: CKRecordID) {
         let alert = getStandardAlert(title: "", message: "")
         // First verify the name not already in use
         let predicate = NSPredicate(format: "username == %@", text)
         let query = CKQuery(recordType: "AppUser", predicate: predicate)
-        let publicDB = CKContainer.defaultContainer().publicCloudDatabase
-        publicDB.performQuery(query, inZoneWithID: nil) {results, error in
+        let publicDB = CKContainer.default().publicCloudDatabase
+        publicDB.perform(query, inZoneWith: nil) {results, error in
             if error == nil {
                 // process - check if record found
                 if results != nil && results!.count > 0 {
                     // Record with username found, display alert
                     alert.title = "Message Retrieval"
                     alert.message = "Username already in use, enter another"
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         self.presentSimpleAlert(alert, animated: true)
                     })
                 }
                 else {
                     // No record with this username, create one!
                     let record = CKRecord(recordType: "AppUser")
-                    record["userRef"] = CKReference(recordID: userID, action: .None)
-                    record["username"] = text
-                    publicDB.saveRecord(record) { savedRecord, error in
+                    record["userRef"] = CKReference(recordID: userID, action: .none)
+                    record["username"] = text as CKRecordValue?
+                    publicDB.save(record, completionHandler: { savedRecord, error in
                         if error == nil {
                             self.appUser = AppUser(userRef: record["userRef"] as! CKReference, username: record["username"] as! String)
-                            dispatch_async(dispatch_get_main_queue(), {
+                            DispatchQueue.main.async(execute: {
                                 if nil == self.labelTitle {
                                     self.labelTitle = (self.appUser?.username)
                                     self.messagesLabel.title = self.labelTitle!
@@ -272,19 +272,19 @@ class ViewTableViewController: UITableViewController {
                         }
                         else {
                             alert.title = "Creating User"
-                            alert.message = error!.description
-                            dispatch_async(dispatch_get_main_queue(), {
+                            alert.message = error.debugDescription
+                            DispatchQueue.main.async(execute: {
                                 self.presentSimpleAlert(alert, animated: true)
                             })
                         }
-                    }  // publicDB.saveRecord
+                    })   // publicDB.saveRecord
                 }
             }
             else {
                 // Error with query, display alert
                 alert.title = "User Query"
-                alert.message = error!.description
-                dispatch_async(dispatch_get_main_queue(), {
+                alert.message = error.debugDescription
+                DispatchQueue.main.async(execute: {
                     self.presentSimpleAlert(alert, animated: true)
                 })
             }
@@ -292,24 +292,24 @@ class ViewTableViewController: UITableViewController {
     }
 
     
-    func presentSimpleAlert(alert: UIAlertController, animated: Bool) {
-        dispatch_async(dispatch_get_main_queue(), {
-            self.presentViewController(alert, animated: true, completion: nil)
+    func presentSimpleAlert(_ alert: UIAlertController, animated: Bool) {
+        DispatchQueue.main.async(execute: {
+            self.present(alert, animated: true, completion: nil)
         })
     }
     
     
-    func getUsernameViewController(title: String, message: String, userID: CKRecordID) -> UIAlertController {
+    func getUsernameViewController(_ title: String, message: String, userID: CKRecordID) -> UIAlertController {
         let alert = getStandardAlert(title: title, message: message)
-        let usernameAction = UIAlertAction(title: "Save", style: .Default, handler: { (action) -> Void in
+        let usernameAction = UIAlertAction(title: "Save", style: .default, handler: { (action) -> Void in
             let usernameText = alert.textFields![0] as UITextField
             self.setUsername(usernameText.text!, userID: userID)
             
         })
         alert.addAction(usernameAction)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: { (alertAction) -> Void in
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (alertAction) -> Void in
         }))
-        alert.addTextFieldWithConfigurationHandler { (textField) in
+        alert.addTextField { (textField) in
             textField.placeholder = "username"
         }
         

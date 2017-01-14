@@ -19,70 +19,67 @@ struct SecureMessage {
     var to: String
     var from: String
     var subject: String
-    var message: NSData
-    var date: NSDate
+    var message: Data
+    var date: Date
 }
 
 
-func setUserID(var userID: CKRecordID) {
-    CKContainer.defaultContainer().fetchUserRecordIDWithCompletionHandler(){ recordID, error in
-        if error == nil {
-            userID = recordID!
-        }
-        else {
+func setUserID(_ userID: CKRecordID) {
+    CKContainer.default().fetchUserRecordID(){ recordID, error in
+        if error != nil {
             print("Error retrieving iCloud user ID")
         }
     }
 }
 
 
-func encryptMessage(message: String, credential: String) -> NSData {
-    let data: NSData = message.dataUsingEncoding(NSUTF8StringEncoding)!
-    return RNCryptor.encryptData(data, password: credential)
+func encryptMessage(_ message: String, credential: String) -> Data {
+    let data: Data = message.data(using: String.Encoding.utf8)!
+    return RNCryptor.encrypt(data: data, withPassword: credential)
 }
 
 
-func decryptMessage(message: NSData, credential: String) throws -> NSData {
-    return try RNCryptor.decryptData(message, password: credential)
+func decryptMessage(_ message: Data, credential: String) throws -> Data {
+    return try RNCryptor.decrypt(data: message, withPassword: credential)
 }
 
 
 // Return current user icloud account status
 func isSignedIn() -> Bool {
-    return NSFileManager.defaultManager().ubiquityIdentityToken != nil ? true : false
+    return FileManager.default.ubiquityIdentityToken != nil ? true : false
 }
 
 
-func getSharedSecret(to: String, from: String, date: NSDate) -> String {
+func getSharedSecret(_ to: String, from: String, date: Date) -> String {
     return "\(to).\(from).\(date.description)"
 }
 
 
-func getStandardAlert(title title: String, message: String) -> UIAlertController {
-    let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+func getStandardAlert(title: String, message: String) -> UIAlertController {
+    let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
     return alert
 }
 
-extension NSURLSession {
-    func sendSynchronousRequest(request: NSURLRequest, completionHandler: (NSData?, NSURLResponse?, NSError?) -> Void) {
-        let semaphore = dispatch_semaphore_create(0)
-        let task = self.dataTaskWithRequest(request) { data, response, error in
-            completionHandler(data, response, error)
-            dispatch_semaphore_signal(semaphore)
-        }
+extension URLSession {
+    func sendSynchronousRequest(_ request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, NSError?) -> Void) {
+        let semaphore = DispatchSemaphore(value: 0)
+        let task = self.dataTask(with: request, completionHandler: { data, response, error in
+            completionHandler(data, response, error as NSError?)
+            semaphore.signal()
+        }) 
         
         task.resume()
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
     }
 }
 
 
 func isNetworkUp() -> Bool {
-    let request = NSURLRequest(URL: NSURL(string: "http://www.apple.com")!)
+    let request = URLRequest(url: URL(string: "http://www.apple.com")!)
     var status = false
-    NSURLSession.sharedSession().sendSynchronousRequest(request) { data, response, error in
+    URLSession.shared.sendSynchronousRequest(request) { data, response, error in
         if let response = response {
-            let httpResponse = response as! NSHTTPURLResponse
+            let httpResponse = response as! HTTPURLResponse
             if httpResponse.statusCode == 200 {
                 status = true
             }
